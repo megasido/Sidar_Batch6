@@ -11,6 +11,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  static const String correctUsername = "admin";
+  static const String correctPassword = "password123";
+  bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -38,27 +41,68 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureText = !obscureText;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText: obscureText,
               ),
               ElevatedButton(
-                  onPressed: () {
-                    print("Password: ${passwordController.text}");
+                child: const Text("Login"),
+                onPressed: () {
+                  print("Password: ${passwordController.text}");
 
-                    if (usernameController.text == "admin" &&
-                        passwordController.text == "password123") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                      );
-                    } else {}
-                  },
-                  child: const Text("Login"))
+                  if (usernameController.text == correctUsername &&
+                      passwordController.text == correctPassword) {
+                    usernameController.clear();
+                    passwordController.clear();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  } else {
+                    usernameController.clear();
+                    passwordController.clear();
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Container(
+                          padding: const EdgeInsets.only(
+                              left: 30, right: 20, top: 16),
+                          height: 150,
+                          width: 400,
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Error',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text('Invalid username or password.'),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ),
